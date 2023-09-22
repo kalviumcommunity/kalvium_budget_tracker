@@ -1,7 +1,6 @@
 ---
 
-## **Kalvium Financial Tracker**: A Comprehensive Financial Companion for Kalvians
-
+## **Kalvium Financial Tracker**: 
 ### **Objective**:
 To empower Kalvians with a state-of-the-art financial tracker, assisting them in managing their finances seamlessly. From tracking expenses and investments to setting savings goals and generating insightful monthly reports, Kalvium is the ultimate tool for financial well-being.
 
