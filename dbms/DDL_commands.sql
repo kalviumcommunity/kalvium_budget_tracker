@@ -29,39 +29,47 @@ CREATE TABLE InvestmentType (
 
 CREATE TABLE Transaction (
     Transaction_ID INT PRIMARY KEY,
-    Email VARCHAR(255) REFERENCES User(Email),
+    Email VARCHAR(255),
     Transaction_Date DATE NOT NULL,
     Transaction_Details VARCHAR(255),
     Transaction_Amount FLOAT NOT NULL,
     Transaction_Type VARCHAR(255) CHECK (Transaction_Type IN ('Income', 'Expense')),
-    Income_Category_ID INT REFERENCES IncomeCategory(Inc_Cat_ID),
-    Expense_Category_ID INT REFERENCES ExpenseCategory(Exp_Cat_ID)
+    Income_Category_ID INT,
+    Expense_Category_ID INT,
+    FOREIGN KEY (Email) REFERENCES User(Email),
+    FOREIGN KEY (Income_Category_ID) REFERENCES IncomeCategory(Inc_Cat_ID),
+    FOREIGN KEY (Expense_Category_ID) REFERENCES ExpenseCategory(Exp_Cat_ID)
 );
+
 
 CREATE TABLE Investment (
     Investment_ID INT PRIMARY KEY,
-    Email VARCHAR(255) REFERENCES User(Email),
+    Email VARCHAR(255),
     Date_of_Investment DATE NOT NULL,
-    Inv_Symbol VARCHAR(255) REFERENCES InvestmentCompany(Inv_Symbol),
+    Inv_Symbol VARCHAR(255),
     Investment_Amount FLOAT NOT NULL,
-    Investment_Type_ID INT REFERENCES InvestmentType(Inv_Type_ID)
+    Investment_Type_ID INT,
+    FOREIGN KEY (Email) REFERENCES User(Email),
+    FOREIGN KEY (Inv_Symbol) REFERENCES InvestmentCompany(Inv_Symbol),
+    FOREIGN KEY (Investment_Type_ID) REFERENCES InvestmentType(Inv_Type_ID)
 );
 
 CREATE TABLE SavingsGoal (
     ID INT PRIMARY KEY,
-    UserID VARCHAR(255) REFERENCES User(Email),
+    UserID VARCHAR(255),
     Goal_Amount FLOAT NOT NULL,
     Current_Amount FLOAT NOT NULL,
-    Target_Date DATE
+    Target_Date DATE,
+    FOREIGN KEY (UserID) REFERENCES User(Email)
 );
 
 CREATE TABLE MonthlyReport (
     ID INT PRIMARY KEY,
-    Email VARCHAR(255) REFERENCES User(Email),
+    Email VARCHAR(255),
     Total_Income FLOAT NOT NULL,
     Total_Expense FLOAT NOT NULL,
     Total_Investment FLOAT NOT NULL,
-    Total_Savings FLOAT NOT NULL
+    Total_Savings FLOAT NOT NULL,
+    FOREIGN KEY (Email) REFERENCES User(Email)
 );
-
 DROP TABLE MonthlyReport 
