@@ -72,4 +72,7 @@ CREATE TABLE MonthlyReport (
     Total_Savings FLOAT NOT NULL,
     FOREIGN KEY (Email) REFERENCES User(Email)
 );
+
+ALTER TABLE MonthlyReport MODIFY ID INT AUTO_INCREMENT;
+
 DROP TABLE MonthlyReport 
