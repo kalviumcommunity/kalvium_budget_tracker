@@ -16,6 +16,30 @@ class User(BaseModel):
     expenses: List = []
     investments: List = []
 
+    # Constructor
+    def __init__(self, **data):
+        super().__init__(**data)  # Calling the parent (BaseModel) constructor
+        print(f"User {self.email} is being created")
+
+    # Destructor
+    def __del__(self):
+        print(f"User {self.email} is being destroyed")
+
+    # Method to calculate total income
+    def get_total_income(self):
+        print("Using 'self' to calculate total income for:", self.email)
+        return sum(income.income_amount for income in self.incomes)
+
+    # Method to calculate total expense
+    def get_total_expense(self):
+        print("Using 'self' to calculate total expense for:", self.email)
+        return sum(expense.expense_amount for expense in self.expenses)
+
+    # Method to calculate balance
+    def get_balance(self):
+        print("Using 'self' to calculate balance for:", self.email)
+        return self.get_total_income() - self.get_total_expense()    
+
 # Model for user registration
 class RegisterUser(BaseModel):
     email: str

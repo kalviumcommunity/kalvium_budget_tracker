@@ -100,16 +100,12 @@ async def add_investment(investment: Investment, current_user: User = Depends(ge
 
 @app.get("/user_details")
 async def get_user_details(current_user: User = Depends(get_current_user)):
-    # Using objects and their properties to calculate totals
-    total_income = sum(income.income_amount for income in current_user.incomes)
-    total_expense = sum(expense.expense_amount for expense in current_user.expenses)
-    
     return {
         "email": current_user.email,
         "incomes": [income.dict() for income in current_user.incomes],
-        "total_income": total_income,
+        "total_income": current_user.get_total_income(),
         "expenses": [expense.dict() for expense in current_user.expenses],
-        "total_expense": total_expense,
-        "balance": total_income - total_expense,
+        "total_expense": current_user.get_total_expense(),
+        "balance": current_user.get_balance(),
         "investments": [investment.dict() for investment in current_user.investments]
     }
