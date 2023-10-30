@@ -74,5 +74,8 @@ CREATE TABLE MonthlyReport (
     Total_Investment FLOAT NOT NULL,
     FOREIGN KEY (Email) REFERENCES Users(Email)
 );
+
+ALTER TABLE MonthlyReport MODIFY ID INT AUTO_INCREMENT;
+
 DROP TABLE MonthlyReport 
 
