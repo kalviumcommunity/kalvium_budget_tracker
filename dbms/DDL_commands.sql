@@ -7,6 +7,9 @@ CREATE TABLE User (
 
 ALTER TABLE User ADD Hashed_Password VARCHAR(255) NOT NULL;
 
+RENAME TABLE user TO users;
+
+
 CREATE TABLE IncomeCategory (
     Inc_Cat_ID INT PRIMARY KEY,
     Inc_Cat VARCHAR(255) NOT NULL
@@ -64,15 +67,15 @@ CREATE TABLE SavingsGoal (
 );
 
 CREATE TABLE MonthlyReport (
-    ID INT PRIMARY KEY,
+    ID INT AUTO_INCREMENT PRIMARY KEY,
     Email VARCHAR(255),
     Total_Income FLOAT NOT NULL,
     Total_Expense FLOAT NOT NULL,
     Total_Investment FLOAT NOT NULL,
-    Total_Savings FLOAT NOT NULL,
-    FOREIGN KEY (Email) REFERENCES User(Email)
+    FOREIGN KEY (Email) REFERENCES Users(Email)
 );
 
 ALTER TABLE MonthlyReport MODIFY ID INT AUTO_INCREMENT;
 
 DROP TABLE MonthlyReport 
+
