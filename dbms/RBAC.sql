@@ -20,17 +20,20 @@ CREATE TABLE UserRole (
     FOREIGN KEY (Role_ID) REFERENCES Role(Role_ID)
 );
 
--- Adding roles
-INSERT INTO Role (Role_ID, Role_Name) VALUES (1, 'Admin');
-INSERT INTO Role (Role_ID, Role_Name) VALUES (2, 'User');
+CREATE ROLE 'Admin';
+CREATE ROLE 'User';
 
--- Adding privileges
-INSERT INTO RolePrivilege (RolePrivilege_ID, Role_ID, Privilege_Name, Table_Name, Access_Type) VALUES (1, 1, 'Manage Users', 'Users', 'SELECT');
-INSERT INTO RolePrivilege (RolePrivilege_ID, Role_ID, Privilege_Name, Table_Name, Access_Type) VALUES (2, 1, 'Manage Users', 'Users', 'INSERT');
 
-INSERT INTO UserRole (UserRole_ID, Email, Role_ID) VALUES (1, 'test', 1);
-INSERT INTO UserRole (UserRole_ID, Email, Role_ID) VALUES (2, 'aryan.sharma@kalvium.community', 2);
+-- Grant the 'admin' role all privileges on the database
+GRANT ALL PRIVILEGES ON `kalvium_budget_tracker`.* TO 'Admin';
 
+-- Grant the 'user' role SELECT and INSERT privileges on the 'Transaction' table
+GRANT SELECT, INSERT ON `kalvium_budget_tracker`.`Transaction` TO 'aryan.sharma@kalvium.community'@'localhost'; 
+
+GRANT 'Admin' TO 'test'@'localhost';
+GRANT 'User' TO 'aryan.sharma@kalvium.community'@'localhost';
+
+FLUSH PRIVILEGES;
 
 
 DELIMITER //
@@ -60,4 +63,4 @@ VALUES (8, 'aryan.sharma@kalvium.community', '2023-10-31', 'Test', 1000.00, 'Inc
 SELECT r.Role_Name
 FROM UserRole ur
 JOIN Role r ON ur.Role_ID = r.Role_ID
-WHERE ur.Email = 'aryan.sharma@kalvium.community';
+WHERE ur.Email = 'test';
