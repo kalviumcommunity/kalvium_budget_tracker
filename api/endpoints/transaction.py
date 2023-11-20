@@ -3,6 +3,7 @@ from database.models import TransactionType, MonthlyReport, TransactionDB, Incom
 from sqlalchemy.orm import Session
 from database.schemas import Transaction, User, BatchTransactions
 from api.dependencies import get_db, get_user, get_current_user
+from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import extract
 
 router = APIRouter()
@@ -21,10 +22,11 @@ def process_single_transaction(transaction: Transaction, current_user: User, db:
     if db_user:
         current_month = transaction.Transaction_Date.month
         current_year = transaction.Transaction_Date.year
+        report_month = transaction.Transaction_Date.replace(day=1)  # First day of the month
 
+        # Fetch or create the MonthlyReport record
         report = db.query(MonthlyReport).filter(
-            MonthlyReport.Email == current_user.email
-        ).filter(
+            MonthlyReport.Email == current_user.email,
             extract('month', transaction.Transaction_Date) == current_month,
             extract('year', transaction.Transaction_Date) == current_year
         ).first()
@@ -34,27 +36,28 @@ def process_single_transaction(transaction: Transaction, current_user: User, db:
             db.add(report)
             db.commit()
 
-        if transaction.Transaction_Type == 'Income':
-            income_category = db.query(IncomeCategoryDB).filter(IncomeCategoryDB.Inc_Cat_ID == transaction.Income_Category_ID).first()
-            if not income_category:
-                raise HTTPException(status_code=400, detail="Income category not found")
-            # Update MonthlyReport with income
-            db.query(MonthlyReport).filter(MonthlyReport.Email == current_user.email).update({
-                MonthlyReport.Total_Income: MonthlyReport.Total_Income + transaction.Transaction_Amount
-            })
-        elif transaction.Transaction_Type == 'Expense':
-            expense_category = db.query(ExpenseCategoryDB).filter(ExpenseCategoryDB.Exp_Cat_ID == transaction.Expense_Category_ID).first()
-            if not expense_category:
-                raise HTTPException(status_code=400, detail="Expense category not found")
-            # Update MonthlyReport with expense
-            db.query(MonthlyReport).filter(MonthlyReport.Email == current_user.email).update({
-                MonthlyReport.Total_Expense: MonthlyReport.Total_Expense + transaction.Transaction_Amount
-            })
+        # Recalculate and update the MonthlyReport record
+        total_income = db.query(func.sum(TransactionDB.Transaction_Amount)).filter(
+            TransactionDB.Email == current_user.email,
+            TransactionDB.Transaction_Type == 'Income',
+            extract('month', TransactionDB.Transaction_Date) == current_month,
+            extract('year', TransactionDB.Transaction_Date) == current_year
+        ).scalar() or 0
 
+        total_expense = db.query(func.sum(TransactionDB.Transaction_Amount)).filter(
+            TransactionDB.Email == current_user.email,
+            TransactionDB.Transaction_Type == 'Expense',
+            extract('month', TransactionDB.Transaction_Date) == current_month,
+            extract('year', TransactionDB.Transaction_Date) == current_year
+        ).scalar() or 0
+
+        report.Total_Income = total_income
+        report.Total_Expense = total_expense
+        
         db.commit()
 
+        # Add the transaction to the Transaction table
         transaction_data = transaction.dict()
-
         db_transaction = TransactionDB(**transaction_data, owner=db_user)
         db.add(db_transaction)
         db.commit()

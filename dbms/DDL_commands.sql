@@ -76,6 +76,7 @@ CREATE TABLE MonthlyReport (
 );
 
 ALTER TABLE MonthlyReport MODIFY ID INT AUTO_INCREMENT;
+ALTER TABLE MonthlyReport ADD Report_Month DATE;
 
 DROP TABLE MonthlyReport 
 
